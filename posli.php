@@ -15,7 +15,7 @@ $zprava = $_POST['zprava'];
 
 if ($predmet!="" and $email!="" and $zprava!="" and $spam=="2")
 {
-Mail("vase@adresa.com", $predmet, $zprava, "From: " . $email);
+Mail("ukdejmek@seznam.cz", $predmet, $zprava, "From: " . $email);
 echo "<p><strong>Váš e-mail byl úspěšně odeslán</strong>.</p>";
 }
 else
