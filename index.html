@@ -2,11 +2,84 @@
 <html>
 <head>
 <title>hello</title>
+
+<style>
+ 
+p.pages a:hover{
+  color: yellow;
+}
+p.pages span.active{
+  color: red;
+}
+</style>
+ 
+ 
 </head>
 <body>
-<h1>hello world</h1>
 
 
+ 
+<?php
+ 
+$db_server = "server";       
+        $db_login = "neco";             
+        $db_heslo = "d";             
+        $db_jmeno = "neco";   
+// zjistime jestli nekde jsme, jinak první strana
+if(isset($url['dir4'])){ // čtvrtá GET proměnná za lomítkem strana-x
+  $strana = split('-',$url['dir4']);
+  $strana = is_numeric($strana[1])?$strana[1]:1;
+}
+else $strana = 1;
+ 
+// zjistíme počet záznamů v tabulce
+$pocetradku = mysql_result(mysql_query("SELECT COUNT(*) from diskuze "), 0);
+if ($pocetradku>0) { // pokud nějaké jsou -> nezbytné výpočty, mysql dotaz, stránkování, jinak nic
+  $pocet = 1;
+  $od = ($strana-1) * $pocet;
+  $limit = "limit $od, $pocet";
+  $cl=mysql_query("SELECT * FROM diskuze $limit;");
+  strankovani($pocet, 3, "/{$url['dir1']}/{$url['dir2']}/{$url['dir3']}/strana-",  $strana, $pocetradku);
+}
+ 
+function strankovani($pocet_radek, $okolo, $url, $strana, $celkem_radek){
+  if ($celkem_radek>$pocet_radek){
+    echo "<p class='pages'>";
+    if ($strana == 1) {
+      echo "Začátek&nbsp;|&nbsp;";
+      echo "Předchozí&nbsp;|&nbsp;";
+    }
+    else {
+      echo "<a href=\"".$url."1/\">Začátek</a>&nbsp;|&nbsp;";
+      echo "<a href=\"".$url."".($strana-1)."/\">Předchozí</a>&nbsp;|&nbsp;";
+    }
+ 
+    for($i = $okolo; $i > 0; $i--){
+      if(($strana-$i)>0) echo "<a href=\"".($url).($strana-$i)."/\">".($strana-$i)."</a>&nbsp;|&nbsp;";;
+    }
+ 
+    echo "span class='active'>".$strana."</span>&nbsp;|&nbsp;";
+    $posledni_strana = ceil($celkem_radek/$pocet_radek);
+ 
+    for($i = 1; $i <= $okolo; $i++){
+      if(($strana+$i)<=$posledni_strana) echo "<a href=\"".($url).($strana+$i)."/\">".($strana+$i)."</a>&nbsp;|&nbsp;";
+    }
+ 
+    if ($posledni_strana == $strana) {
+      echo "Následující&nbsp;|&nbsp;";
+      echo "Konec";
+    }
+    else {
+      echo "<a href=\"".$url.($strana+1)."/\">Následující</a>&nbsp;|&nbsp;";
+      echo "<a href=\"".$url.$posledni_strana."/\">Konec</a>";
+    }
+    echo "</p>";
+  }
+}
+?>
+ 
+ 
+ 
 </body>
 </html>
 
